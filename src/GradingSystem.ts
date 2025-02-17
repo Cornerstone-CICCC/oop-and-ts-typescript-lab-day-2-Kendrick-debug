@@ -13,6 +13,7 @@ interface Grade {
   grade: number;
 }
 
+
 interface Student {
   id: number;
   name: string;
@@ -22,26 +23,64 @@ interface Student {
 class Gradebook<T extends Student> {
   students = []
 
-  addStudent(student) {
-
+  addStudent(student: T): string {
+    this.students.push(student);
+    return `${student.name} added to the gradebook.`;
   }
 
-  addGrade(id, grade) {
-
+  addGrade(id: number, grade: Grade): string {
+    const studentFound = this.students.find(student => student.id === id)
+    if (!studentFound) {
+      return `Student not found`
+    }
+    studentFound.grades.push(grade)
+    return `Grade recorded for ${grade.subject}`
   }
 
-  getAverageGrade(id) {
-
+  getAverageGrade(id: number): string {
+    const studentFound = this.students.find(student => student.id === id)
+    if (!studentFound) {
+      return `Student not found`
+    }
+    let sum: number = 0
+    let grades: Grade[] = studentFound.grades
+    grades.forEach(subject => {
+      sum += subject.grade
+    })
+    let average: number = sum / grades.length
+    return `${studentFound.name}'s average grade is ${average}`
   }
 
-  getStudentGrades(id) {
-
+  getStudentGrades(id: number): string {
+    const studentFound = this.students.find(student => student.id === id)
+    if (!studentFound) {
+      return `Student not found`
+    }
+    const studentGrades: string[] = []
+    const grades: Grade[] = studentFound.grades
+    grades.forEach(subject => {
+      const recordSubject = `${subject.subject}: ${subject.grade}`
+      studentGrades.push(recordSubject)
+    })
+    return `${studentFound.name}'s grades: ${studentGrades}`
   }
 
-  updateSubjectGrade(id, subject, newGrade) {
-
+  updateSubjectGrade(id: number, subject: string, newGrade: number): string {
+    const studentFound = this.students.find(student => student.id === id)
+    if (!studentFound) {
+      return `Student not found`
+    }
+    const grades: Grade[] = studentFound.grades
+    const subjectFound: Grade = grades.find(grade => grade.subject === subject)
+    if (subjectFound) {
+      subjectFound.grade = newGrade
+      return `${subject} updated to ${newGrade}`
+    } else {
+      return `Subject not found`
+    }
   }
 }
+
 
 // Test cases
 const gradebook = new Gradebook();

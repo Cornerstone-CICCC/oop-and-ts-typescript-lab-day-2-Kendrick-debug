@@ -25,26 +25,57 @@ interface CartItem {
 }
 
 class ShoppingCart<T extends CartItem> {
-  cart = []
+  cart: T[] = []
 
-  addToCart(product) {
-
+  addToCart(product: T): string {
+    this.cart.push(product);
+    return `${product.name} added to cart.`;
   }
 
-  updateQuantity(id, qty) {
+  updateQuantity(id: number, qty: number): string {
+    this.cart = this.cart.map(item => {
+      if(item.id === id) {
+        return {
+          ...item,
+          quantity: qty
+        }
+      } else {
+        return item
+      }
+    })
 
+    const product = this.cart.find(item => item.id === id);
+    return `Updated quantity of ${product.name} to ${product.quantity}`;
   }
 
-  getTotalPrice() {
-
+  getTotalPrice(): string {
+    let total: number = 0;
+    this.cart.forEach(item => {
+      total += item.price * item.quantity;
+    })
+    return `Total costs of items are ${total}`;
   }
 
-  getProductsOfCategory(category) {
-
+  getProductsOfCategory(category: string): T[] {
+    let sortProduct: T[] = [];
+    this.cart.forEach(item => {
+      if(item.category === category) {
+        sortProduct.push(item);
+      }
+    })
+    return sortProduct;
   }
 
-  removeFromCart(id) {
-
+  removeFromCart(id: number): string {
+    let removeItem: string = "";
+    this.cart = this.cart.filter(item => {
+      if(item.id !== id) {
+        return item
+      } else {
+        removeItem = item.name;
+      }
+    })
+    return `${removeItem} removed from cart`;
   }
 }
 
